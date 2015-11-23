@@ -1,0 +1,178 @@
+<form>
+  <label>Alert Profiling</label>
+  <description />
+  <fieldset autoRun="true" submitButton="true">
+    <input type="text" token="sensor">
+      <label>Sensor</label>
+      <default>*</default>
+      <prefix>sensor="</prefix>
+      <suffix>"</suffix>
+    </input>
+    <input type="time" token="selTime">
+      <label />
+      <default>
+        <earliestTime>@d</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <title>Alert Volume by Message</title>
+        <searchString>index=sguil $sensor$ | stats count by msg sensor | sort - count | head 20 | xyseries msg sensor count  | addtotals</searchString>
+        <earliestTime>$selTime.earliest$</earliestTime>
+        <latestTime>$selTime.latest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.chart.overlayFields">Total</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Alert Volume by Session</title>
+        <searchString>index=sguil  $sensor$ | eval conversation=src_ip + " &lt;-&gt; " + dst_ip | stats count by conversation msg | sort - count | head 10 | xyseries conversation msg count</searchString>
+        <earliestTime>$selTime.earliest$</earliestTime>
+        <latestTime>$selTime.latest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+    <panel>
+      <input type="dropdown" searchWhenChanged="true" token="byProc">
+        <label>Granularity</label>
+        <choice value="">By Sensor</choice>
+        <choice value="| eval sensor=sensor + &quot;-&quot; + sensor_num">By Process</choice>
+        <default>| eval placehoder="NONE"</default>
+      </input>
+      <chart>
+        <title>Alert Volume by Sensor</title>
+        <searchString>index=sguil  $sensor$ $byProc$ | stats count AS alert_count by sensor | sort sensor</searchString>
+        <earliestTime>$selTime.earliest$</earliestTime>
+        <latestTime>$selTime.latest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Rule Update Status</title>
+        <searchString>index=sguil  sourcetype=sid_changes | rex field=_raw "Enabled:-*(?&lt;enabled_rules&gt;[0-9]+)"  | rex field=_raw "Disabled:-*(?&lt;disabled_rules&gt;[0-9]+)"  | rex field=_raw "New:-*(?&lt;new_rules&gt;[0-9]+)"  | rex field=_raw "Total:-*(?&lt;total_rules&gt;[0-9]+)"  | rex field=_raw "Deleted:-*(?&lt;deleted_rules&gt;[0-9]+)" | transaction _time | eval rule_delta = abs(new_rules - deleted_rules) | timechart sum(new_rules) AS new_rules sum(deleted_rules) AS deleted_rules sum(rule_delta) AS rule_delta</searchString>
+        <earliestTime>-30d@d</earliestTime>
+        <latestTime>now</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Enabled Rule Count</title>
+        <searchString>index=sguil  sourcetype=sid_changes | rex field=_raw "Enabled:-*(?&lt;enabled_rules&gt;[0-9]+)"  | rex field=_raw "Disabled:-*(?&lt;disabled_rules&gt;[0-9]+)"  | rex field=_raw "New:-*(?&lt;new_rules&gt;[0-9]+)"  | rex field=_raw "Total:-*(?&lt;total_rules&gt;[0-9]+)"  | rex field=_raw "Deleted:-*(?&lt;deleted_rules&gt;[0-9]+)" | transaction _time | eval rule_delta = abs(new_rules - deleted_rules) | timechart sum(enabled_rules) AS enabled_rules</searchString>
+        <earliestTime>-2w</earliestTime>
+        <latestTime>now</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Last Sensor Event</title>
+        <searchString>index=sguil | eval sensor=sensor + "-" + sensor_num | stats first(_time) AS last_event by sensor | eval current_time = now() | eval time_behind = tostring(current_time - last_event, "duration") | fieldformat last_event = strftime(last_event, "%Y-%m-%d %H:%M:%S") | table sensor last_event time_behind</searchString>
+        <earliestTime>@d</earliestTime>
+        <latestTime>now</latestTime>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">50</option>
+      </table>
+    </panel>
+  </row>
+</form>
+

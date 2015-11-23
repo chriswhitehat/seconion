@@ -1,0 +1,11 @@
+<nav search_view="search" color="#65A637">
+  <view name="alert_profiling"/>
+  <view name="rule_profiling"/>
+  <view name="nsm_packet_loss"/>
+  <view name="search" default='true' />
+  <view name="data_models" />
+  <view name="reports" />
+  <view name="alerts" />
+  <view name="dashboards" />
+</nav>
+

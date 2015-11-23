@@ -1,0 +1,193 @@
+<form>
+  <label>Rule Profiling</label>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="dropdown" token="selSensors">
+      <label>Sensors</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <search>
+        <query>index=seconion sourcetype=snort_rules_stats | stats count by sensorname</query>
+        <earliest>@d</earliest>
+        <latest>now</latest>
+      </search>
+      <fieldForLabel>sensorname</fieldForLabel>
+      <fieldForValue>sensorname</fieldForValue>
+    </input>
+    <input type="time" token="selTime" searchWhenChanged="false">
+      <label></label>
+      <default>
+        <earliest>@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Microseconds/Sensor</title>
+      <input type="dropdown" token="selBy">
+        <label>by</label>
+        <choice value="rule">Rule</choice>
+        <choice value="group">Group</choice>
+        <default>rule</default>
+      </input>
+      <chart>
+        <search>
+          <query>index=seconion sourcetype=snort_rules_stats sensorname="$selSensors$" | lookup sid_msg_map sid | eval rule = msg." - ".sid | stats sum(microsecs) AS microsecs by sensorname $selBy$ | sort -microsecs | head 40 | xyseries $selBy$ sensorname microsecs</query>
+          <earliest>$selTime.earliest$</earliest>
+          <latest>$selTime.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">-45</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisEnd</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Total Microseconds</title>
+      <input type="dropdown" token="selByTotal">
+        <label>by</label>
+        <choice value="rule">Rule</choice>
+        <choice value="group">Group</choice>
+        <default>rule</default>
+      </input>
+      <chart>
+        <search>
+          <query>index=seconion sourcetype=snort_rules_stats sensorname="$selSensors$" | lookup sid_msg_map sid | eval rule = msg." - ".sid | stats sum(microsecs) AS microsecs by $selByTotal$ | sort -microsecs | head 999</query>
+          <earliest>$selTime.earliest$</earliest>
+          <latest>$selTime.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <input type="time" token="selOverTime">
+        <label></label>
+        <default>
+          <earliest>-7d@h</earliest>
+          <latest>now</latest>
+        </default>
+      </input>
+      <chart>
+        <title>Microseconds over Time</title>
+        <search>
+          <query>index=seconion sourcetype=snort_rules_stats sensorname="$selSensors$" | lookup sid_msg_map sid | eval rule = msg." - ".sid | timechart usenull=f useother=f limit=30 sum(microsecs) AS microsecs by rule</query>
+          <earliest>$selOverTime.earliest$</earliest>
+          <latest>$selOverTime.latest$</latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>High Alert Percentage</title>
+        <search>
+          <query>index=seconion sourcetype=snort_rules_stats alerts!=0 sensorname="$selSensors$" | lookup sid_msg_map sid | stats sum(checks) AS checks sum(alerts) AS alerts sum(microsecs) AS microsecs by sid msg | eval alert_percent = round(alerts / checks * 100, 2) | where alert_percent &gt; 25 | sort - checks</query>
+          <earliest>$selTime.earliest$</earliest>
+          <latest>$selTime.latest$</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Imprecise Rules</title>
+        <search>
+          <query>index=seconion sourcetype=snort_rules_stats  sensorname="$selSensors$" | lookup sid_msg_map sid | stats sum(checks) AS checks sum(matches) AS matches sum(microsecs) AS microsecs by sid msg | eval matches_percent = round(matches / checks * 100, 2) | where matches_percent &gt; 25 | sort - checks</query>
+          <earliest>$selTime.earliest$</earliest>
+          <latest>$selTime.latest$</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <table>
+        <title>Raw Stats</title>
+        <search>
+          <query>index=seconion sourcetype=snort_rules_stats sensorname=$selSensors$ | lookup sid_msg_map sid | stats c sum(checks) AS checks sum(matches) AS matches sum(alerts) AS alerts sum(microsecs) AS microsecs sum(avg_per_check) AS avg_per_check sum(avg_per_match) AS avg_per_match sum(avg_per_nonmatch) AS avg_per_nonmatch by gid sid revision disabled group msg | eval avg_per_check = avg_per_check / c | eval avg_per_match = avg_per_match / c | eval avg_per_nonmatch = avg_per_nonmatch / c | table gid sid revision group msg checks matches alerts microsecs avg_per_check avg_per_match avg_per_nonmatch | sort -microsecs</query>
+          <earliest>$selTime.earliest$</earliest>
+          <latest>$selTime.latest$</latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">true</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">20</option>
+      </table>
+    </panel>
+  </row>
+</form>

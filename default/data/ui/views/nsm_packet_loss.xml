@@ -1,0 +1,355 @@
+<form>
+  <label>NSM Packet Loss</label>
+  <description/>
+  <fieldset submitButton="false">
+    <input type="dropdown" searchWhenChanged="true" token="sensor">
+      <label>Sensor</label>
+      <choice value="*">All</choice>
+      <search>
+        <query>|inputlookup sensors</query>
+      </search>
+      <fieldForLabel>sensorname</fieldForLabel>
+      <fieldForValue>sensorname</fieldForValue>
+    </input>
+    <input type="time" token="selTime" searchWhenChanged="true">
+      <label/>
+      <default>
+        <earliestTime>@d</earliestTime>
+        <latestTime>now</latestTime>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <title>Snort PF_RING Packet Loss</title>
+        <searchString>index=seconion sourcetype=pf_ring_stats sensorname="$sensor$" application=snort* | stats first(recvd) AS recvd first(dropped) AS dropped by sensorname ring | stats sum(recvd) AS recvd sum(dropped) AS dropped | eval packet_loss_perc = (dropped / recvd) * 100 | fields packet_loss_perc</searchString>
+        <earliestTime>$selTime.earliest$</earliestTime>
+        <latestTime>$selTime.latest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">fillerGauge</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">minimal</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.chart.rangeValues">["0","10","20","50"]</option>
+        <option name="charting.gaugeColors">[0x84E900,0xFFE800,0xBF3030]</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Snort Packet Loss</title>
+        <searchString>index=seconion sourcetype=snort_stats host="$sensor$" | stats sum(pkt_stats_pkts_drop) AS pkt_stats_pkts_drop sum(pkt_stats_pkts_recv) AS pkt_stats_pkts_recv | eval packet_loss_perc = pkt_stats_pkts_drop / pkt_stats_pkts_recv  * 100 | fields packet_loss_perc</searchString>
+        <earliestTime>$selTime.earliest$</earliestTime>
+        <latestTime>$selTime.latest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">fillerGauge</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">minimal</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.chart.rangeValues">["0","10","20","50"]</option>
+        <option name="charting.gaugeColors">[0x84E900,0xFFE800,0xBF3030]</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Bro PF_RING Packet Loss</title>
+        <searchString>index=seconion sourcetype=pf_ring_stats sensorname="$sensor$" application=bro* | stats first(recvd) AS recvd first(dropped) AS dropped by sensorname ring | stats sum(recvd) AS recvd sum(dropped) AS dropped | eval packet_loss_perc = (dropped / recvd) * 100 | fields packet_loss_perc</searchString>
+        <earliestTime>$selTime.earliest$</earliestTime>
+        <latestTime>$selTime.latest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">fillerGauge</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">minimal</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.chart.rangeValues">["0","10","20","50"]</option>
+        <option name="charting.gaugeColors">[0x84E900,0xFFE800,0xBF3030]</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Bro Packet Loss</title>
+        <searchString>index=seconion sourcetype=bro_stats sensorname="$sensor$" | stats first(recvd) AS recvd first(dropped) AS dropped by sensorname instance | stats sum(recvd) AS recvd sum(dropped) AS dropped | eval packet_loss_perc = (dropped / recvd) * 100 | fields packet_loss_perc</searchString>
+        <earliestTime>$selTime.earliest$</earliestTime>
+        <latestTime>$selTime.latest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">fillerGauge</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">minimal</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.chart.rangeValues">["0","10","20","50"]</option>
+        <option name="charting.gaugeColors">[0x84E900,0xFFE800,0xBF3030]</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Bro Capture Loss</title>
+        <searchString>index=bro sourcetype="bro_capture_loss" peer="$sensor$"   | stats sum(gaps) AS total_gaps sum(acks) as total_acks | eval total_loss=(total_gaps/total_acks) * 100 | fields total_loss</searchString>
+        <earliestTime>$selTime.earliest$</earliestTime>
+        <latestTime>$selTime.latest$</latestTime>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">fillerGauge</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">minimal</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.chart.rangeValues">[0,"10",25,50]</option>
+        <option name="charting.gaugeColors">[0x84E900,0xFFE800,0xBF3030]</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <input type="dropdown" token="selIDS" searchWhenChanged="true">
+        <label>IDS</label>
+        <choice value="snort">Snort</choice>
+        <choice value="bro">Bro</choice>
+        <default>snort</default>
+      </input>
+      <chart>
+        <title>Packet Loss Percent Over Time</title>
+        <searchString>index=seconion (sourcetype=$selIDS$_stats host="$sensor$") OR (sourcetype=$selIDS$_stats sensorname="$sensor$") OR (sourcetype=pf_ring_stats sensorname="$sensor$" application=$selIDS$*) | rex field=source "\-(?&lt;snort_instance&gt;[0-9]+).stats" | eval snort_sensor=host."-".snort_instance | eval bro_sensor = sensorname."-".instance | eval sensor = coalesce( ring, snort_sensor, bro_sensor) |  eval total_pkts_recv = pkt_stats_pkts_recv + pkt_stats_pkts_drop  | eval recvd = coalesce(recvd, total_pkts_recv) | eval dropped = coalesce(dropped, pkt_stats_pkts_drop) | bucket _time span=5min | stats sum(dropped) AS dropped sum(recvd) AS recvd by _time sourcetype sensor | sort 0 sourcetype sensor _time | delta dropped AS drop_diff | delta recvd AS recvd_diff | eval dropped = if(sourcetype=="snort_stats", dropped, max(0, drop_diff)) | eval recvd =  if(sourcetype=="snort_stats", recvd, max(0, recvd_diff)) | stats sum(recvd) AS recvd sum(dropped) AS dropped by _time sourcetype | eval packet_loss_perc = dropped / recvd * 100 | xyseries _time sourcetype packet_loss_perc | eventstats max(snort_stats) AS snort_max max(pf_ring_stats) AS pf_max max(bro_stats) AS bro_max | eval highest_loss = max(snort_max, bro_max, pf_max) | fields - snort_max bro_max pf_max</searchString>
+        <earliestTime>$selTime.earliest$</earliestTime>
+        <latestTime>$selTime.latest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">zero</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.axisTitleY.text">% Loss</option>
+        <option name="charting.axisLabelsY.majorUnit">10</option>
+        <option name="charting.axisY.maximumNumber">100</option>
+        <option name="maxSpotColor">000fff</option>
+        <selection>
+          <set token="selectedEarliest">$start$</set>
+          <set token="selectedLatest">$end$</set>
+          <set token="showHostsChart">*</set>
+        </selection>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <input type="dropdown" token="selMeasurement" searchWhenChanged="true">
+        <label>Measurement</label>
+        <choice value="sum(orig_bytes) AS orig_bytes sum(resp_bytes) AS resp_bytes">Bytes</choice>
+        <choice value="sum(orig_pkts) AS orig_pkts  sum(resp_pkts) AS resp_pkts">Packets</choice>
+        <choice value="count">Flows</choice>
+        <default>sum(orig_bytes) AS orig_bytes sum(resp_bytes) AS resp_bytes</default>
+      </input>
+      <input type="dropdown" token="selDirection">
+        <label>Direction</label>
+        <choice value="id_orig_h">Originating Host</choice>
+        <choice value="id_resp_h">Responding Host</choice>
+        <default>id_orig_h</default>
+      </input>
+      <input type="text" token="selBaseSearchFilter">
+        <label>Base Search Filter</label>
+        <default>*</default>
+      </input>
+      <chart>
+        <title>Bro Conn over Selected Packet Loss TIme</title>
+        <searchString>index=bro_conn sensorname="$sensor$*" $showHostsChart$ $selBaseSearchFilter$ | timechart limit=20 useother=f $selMeasurement$ by $selDirection$</searchString>
+        <earliestTime>$selectedEarliest$</earliestTime>
+        <latestTime>$selectedLatest$</latestTime>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="count">10</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">zero</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">minimal</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.chart.rangeValues">[0,"1","5","10"]</option>
+        <option name="charting.gaugeColors">[0x84E900,0xFFE800,0xBF3030]</option>
+        <drilldown>
+          <set token="clickedHost">$click.name2$</set>
+          <set token="showHostDrilldowns">*</set>
+        </drilldown>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <input type="dropdown" token="selPortDirection">
+        <label>Direction</label>
+        <choice value="id_orig_p">Originating Port</choice>
+        <choice value="id_resp_p">Responding Port</choice>
+        <default>id_orig_p</default>
+      </input>
+      <chart>
+        <title>Bro Conn Host Behavior</title>
+        <searchString>index=bro_conn sensorname="$sensor$" $showHostDrilldowns$ $selBaseSearchFilter$ | eval orig_host_token = "$clickedHost$" | rex field=orig_host_token "(?&lt;sel_host&gt;[0-9].+)" | where $selDirection$ = sel_host | timechart limit=20 useother=f $selMeasurement$ by $selPortDirection$</searchString>
+        <earliestTime>$selectedEarliest$</earliestTime>
+        <latestTime>$selectedLatest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">zero</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Originating Host</title>
+        <searchString>index=bro_conn sensorname="$sensor$" $showHostDrilldowns$ $selBaseSearchFilter$ | eval orig_host_token = "$clickedHost$" | rex field=orig_host_token "(?&lt;sel_host&gt;[0-9].+)" | where $selDirection$ = sel_host | stats sum(orig_bytes) AS orig_bytes sum(resp_bytes) AS resp_bytes by id_orig_h | eval combined = orig_bytes + resp_bytes | top combined by id_orig_h | head 999</searchString>
+        <earliestTime>$selectedEarliest$</earliestTime>
+        <latestTime>$selectedLatest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Responding Hosts</title>
+        <searchString>index=bro_conn sensorname="$sensor$" $showHostDrilldowns$ $selBaseSearchFilter$ | eval orig_host_token = "$clickedHost$" | rex field=orig_host_token "(?&lt;sel_host&gt;[0-9].+)" | where $selDirection$ = sel_host | stats sum(orig_bytes) AS orig_bytes sum(resp_bytes) AS resp_bytes by id_resp_h | eval combined = orig_bytes + resp_bytes | top combined by id_resp_h | head 999</searchString>
+        <earliestTime>$selectedEarliest$</earliestTime>
+        <latestTime>$selectedLatest$</latestTime>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+  </row>
+</form>
+
